@@ -72,7 +72,6 @@ const App = () => {
     });
 
     setCards(updatedCards);
-
     resetTurn();
   }, [choiceOne, choiceTwo]);
 
@@ -84,10 +83,35 @@ const App = () => {
     setDisabled(false);
   };
 
+  // check whether all cards are matched
+  const allCardsMatched = () => {
+    let allMatched = true;
+
+    cards.forEach((card) => {
+      if (!card.matched) {
+        allMatched = false;
+      }
+    });
+
+    return allMatched;
+  };
+
+  useEffect(() => {
+    if (!cards.length) return;
+    const gameOver = allCardsMatched();
+    if (gameOver) {
+      console.log("Game over");
+      console.log("Score: " + turns);
+    }
+  }, [cards]);
+
   return (
     <div className="App">
-      <h1>Magic Match</h1>
-      <button onClick={shuffleCards}>New Game</button>
+      <h1 className="title">Magic Match</h1>
+      <div className="header">
+        <button onClick={shuffleCards}>New Game</button>
+        <p>Turns: {turns}</p>
+      </div>
       <div className="card-grid">
         {cards.map((card) => (
           <Card
@@ -99,7 +123,6 @@ const App = () => {
           />
         ))}
       </div>
-      <p>Turns: {turns}</p>
     </div>
   );
 };
