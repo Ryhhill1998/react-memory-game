@@ -18,6 +18,16 @@ const App = () => {
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [highscore, setHighscore] = useState(null);
+
+  // get highscore from localStorage
+  const getHighscore = () => {
+    const savedHighscore = JSON.parse(localStorage.getItem("highscore"));
+
+    if (!savedHighscore) return;
+
+    setHighscore(savedHighscore);
+  };
 
   // shuffle cards
   const shuffleCards = () => {
@@ -42,6 +52,9 @@ const App = () => {
 
     // reset turns
     setTurns(0);
+
+    // retrieve highscore from localStorage if it exists
+    getHighscore();
   };
 
   useEffect(() => {
@@ -96,12 +109,21 @@ const App = () => {
     return allMatched;
   };
 
+  // set highscore
+  const updateHighscore = () => {
+    if (highscore && turns >= highscore) return;
+
+    localStorage.setItem("highscore", JSON.stringify(turns));
+  };
+
+  // check if game is over and set highscore if turns is lower than the current
   useEffect(() => {
     if (!cards.length) return;
+
     const gameOver = allCardsMatched();
+
     if (gameOver) {
-      console.log("Game over");
-      console.log("Score: " + turns);
+      updateHighscore();
     }
   }, [cards]);
 
@@ -111,6 +133,7 @@ const App = () => {
       <div className="header">
         <button onClick={shuffleCards}>New Game</button>
         <p>Turns: {turns}</p>
+        {highscore ? <p>Highscore: {highscore}</p> : ""}
       </div>
       <div className="card-grid">
         {cards.map((card) => (
